@@ -287,24 +287,57 @@ async function doRegister(){
 let scram = null;
 let scramReady = false;
 
+async function checkFiles(){
+  // Verify critical files exist before trying to init
+  const files = ['/scram/scramjet.all.js', '/scram/scramjet.worker.js', '/baremux/index.js', '/epoxy/index.js'];
+  const missing = [];
+  await Promise.all(files.map(async f => {
+    const r = await fetch(f, {method:'HEAD'}).catch(()=>({ok:false}));
+    if(!r.ok) missing.push(f);
+  }));
+  return missing;
+}
+
 async function initScramjet(){
   try {
+    // Check files first
+    const missing = await checkFiles();
+    if(missing.length){
+      console.error('[scramjet] missing files:', missing);
+      showGlobalError('Missing proxy files: ' + missing.join(', ') + '<br>Make sure npm install ran correctly on Render.');
+      return;
+    }
+
     await BareMux.SetTransport('/epoxy/index.js', {
       wisp: `${location.protocol==='https:'?'wss':'ws'}://${location.host}/wisp/`
     });
     scram = new ScramjetController(__scramjet$config);
     await scram.init('/scram/scramjet.worker.js');
     scramReady = true;
+    hideGlobalError();
     console.log('[scramjet] ready');
   } catch(e) {
-    console.warn('[scramjet] init failed:', e.message);
+    console.error('[scramjet] init failed:', e);
+    showGlobalError('Proxy engine error: ' + e.message);
   }
 }
 const initPromise = initScramjet();
 
+function showGlobalError(msg){
+  let el = document.getElementById('global-err');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'global-err';
+    el.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:#1a0010;border:1px solid var(--accent);color:#ff6b7a;font-family:"JetBrains Mono",monospace;font-size:12px;padding:10px 18px;border-radius:8px;z-index:9999;max-width:90vw;text-align:center;line-height:1.6;';
+    document.body.appendChild(el);
+  }
+  el.innerHTML = msg;
+}
+function hideGlobalError(){ document.getElementById('global-err')?.remove(); }
+
 async function encodeProxyUrl(url){
   if(!scramReady) await initPromise;
-  if(!scram) throw new Error('Proxy engine failed to load. Try reloading the page.');
+  if(!scram) throw new Error('Proxy engine failed to load — check browser console for details.');
   return scram.encodeUrl(url);
 }
 
