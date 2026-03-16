@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Maths Support — Free maths resources, practice problems, and tools for every level."/>
+  <meta name="keywords" content="maths, mathematics, algebra, calculus, geometry, study, education"/>
+  <title>Maths Support</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f9f8f5; --surface: #ffffff; --text: #111111;
+      --muted: #6b6b6b; --border: #e4e0d9;
+      --accent: #1a4a00; --accent-dim: #e4edd9; --accent-mid: #4a7c20;
+      --radius: 3px; --mono: 'DM Mono', monospace; --serif: 'DM Serif Display', serif;
+    }
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--mono); font-size: 14px; }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 48px; height: 56px;
+      background: var(--bg); border-bottom: 1px solid var(--border);
+    }
+    .logo { font-family: var(--serif); font-size: 18px; text-decoration: none; color: var(--text); }
+    .logo b { color: var(--accent); }
+    .nav-links { display: flex; gap: 28px; list-style: none; }
+    .nav-links a { color: var(--muted); text-decoration: none; font-size: 12px; letter-spacing: .5px; transition: color .15s; }
+    .nav-links a:hover { color: var(--text); }
+
+    .hero { max-width: 680px; margin: 72px auto 0; padding: 0 24px; text-align: center; animation: up .55s ease both; }
+    .badge { display: inline-block; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); background: var(--accent-dim); padding: 3px 10px; border-radius: 2px; margin-bottom: 22px; }
+    h1 { font-family: var(--serif); font-size: clamp(34px, 5vw, 56px); line-height: 1.08; letter-spacing: -.8px; margin-bottom: 14px; }
+    h1 i { font-style: italic; color: var(--accent-mid); }
+    .hero-sub { color: var(--muted); font-size: 13px; max-width: 440px; margin: 0 auto 44px; line-height: 1.7; }
+
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 28px 32px; max-width: 580px; margin: 0 auto 72px; animation: up .55s .12s ease both; }
+    .card-label { font-size: 10px; letter-spacing: 1.8px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; display: block; }
+    .input-row { display: flex; gap: 8px; }
+    .url-input { flex: 1; padding: 11px 14px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); font-family: var(--mono); font-size: 13px; color: var(--text); outline: none; transition: border-color .2s; }
+    .url-input:focus { border-color: var(--accent); }
+    .url-input::placeholder { color: var(--muted); }
+    .go-btn { padding: 11px 22px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-family: var(--mono); font-size: 12px; cursor: pointer; letter-spacing: .5px; transition: background .15s; white-space: nowrap; }
+    .go-btn:hover { background: var(--accent-mid); }
+    .card-hint { margin-top: 10px; font-size: 11px; color: var(--muted); line-height: 1.6; }
+    .error-msg { display: none; margin-top: 10px; font-size: 12px; color: #b00; background: #fff0f0; border: 1px solid #fcc; padding: 8px 12px; border-radius: var(--radius); }
+
+    .topics { max-width: 880px; margin: 0 auto 72px; padding: 0 24px; animation: up .55s .24s ease both; }
+    .section-head { font-family: var(--serif); font-size: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .cell { background: var(--bg); padding: 18px 20px; cursor: default; transition: background .12s; }
+    .cell:hover { background: var(--accent-dim); }
+    .cell-icon { font-size: 18px; margin-bottom: 6px; }
+    .cell-name { font-size: 13px; margin-bottom: 3px; }
+    .cell-desc { font-size: 11px; color: var(--muted); }
+
+    .formula-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); overflow: hidden; padding: 14px 0; margin-bottom: 72px; position: relative; }
+    .formula-strip::before, .formula-strip::after { content: ''; position: absolute; top: 0; width: 80px; height: 100%; z-index: 2; }
+    .formula-strip::before { left: 0; background: linear-gradient(to right, var(--bg), transparent); }
+    .formula-strip::after { right: 0; background: linear-gradient(to left, var(--bg), transparent); }
+    .formula-track { display: flex; gap: 48px; width: max-content; animation: scroll 28s linear infinite; }
+    .formula-track span { font-size: 13px; color: var(--muted); white-space: nowrap; }
+    @keyframes scroll { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+    footer { border-top: 1px solid var(--border); padding: 20px 48px; display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 11px; }
+    @keyframes up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 600px) {
+      nav { padding: 0 20px; } .nav-links { display: none; }
+      .hero { margin-top: 44px; } footer { flex-direction: column; gap: 6px; }
+      .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="/"><b>Maths</b>Support</a>
+  <ul class="nav-links">
+    <li><a href="#">Topics</a></li>
+    <li><a href="#">Practice</a></li>
+    <li><a href="#">Tools</a></li>
+    <li><a href="#">About</a></li>
+  </ul>
+</nav>
+
+<main>
+  <section class="hero">
+    <span class="badge">Free · Open · Ad-free</span>
+    <h1>Your maths<br/><i>anywhere</i></h1>
+    <p class="hero-sub">Search any formula, topic, or open any resource directly. No sign-up required.</p>
+  </section>
+
+  <section style="max-width:580px;margin:0 auto;padding:0 24px;">
+    <div class="card">
+      <span class="card-label">Search or open a resource</span>
+      <div class="input-row">
+        <input id="ms-input" class="url-input" type="text"
+          placeholder="quadratic formula · wolfram alpha · any site…"
+          autocomplete="off" spellcheck="false"/>
+        <button class="go-btn" onclick="msGo()">Open →</button>
+      </div>
+      <p class="card-hint">Type a topic to search, or paste any URL to open it through our secure resource viewer.</p>
+      <div class="error-msg" id="ms-error"></div>
+    </div>
+  </section>
+
+  <div class="formula-strip">
+    <div class="formula-track" id="ftrack"></div>
+  </div>
+
+  <section class="topics">
+    <h2 class="section-head">Browse by topic</h2>
+    <div class="grid">
+      <div class="cell"><div class="cell-icon">∑</div><div class="cell-name">Algebra</div><div class="cell-desc">Equations & expressions</div></div>
+      <div class="cell"><div class="cell-icon">∫</div><div class="cell-name">Calculus</div><div class="cell-desc">Derivatives & integrals</div></div>
+      <div class="cell"><div class="cell-icon">△</div><div class="cell-name">Geometry</div><div class="cell-desc">Shapes, proofs & area</div></div>
+      <div class="cell"><div class="cell-icon">ℙ</div><div class="cell-name">Probability</div><div class="cell-desc">Stats & distributions</div></div>
+      <div class="cell"><div class="cell-icon">ℕ</div><div class="cell-name">Number Theory</div><div class="cell-desc">Primes & divisibility</div></div>
+      <div class="cell"><div class="cell-icon">→</div><div class="cell-name">Vectors</div><div class="cell-desc">Linear & 3D space</div></div>
+      <div class="cell"><div class="cell-icon">ƒ</div><div class="cell-name">Functions</div><div class="cell-desc">Graphs & transforms</div></div>
+      <div class="cell"><div class="cell-icon">π</div><div class="cell-name">Trigonometry</div><div class="cell-desc">Identities & angles</div></div>
+      <div class="cell"><div class="cell-icon">λ</div><div class="cell-name">Linear Algebra</div><div class="cell-desc">Matrices & eigenvalues</div></div>
+      <div class="cell"><div class="cell-icon">∞</div><div class="cell-name">Series & Limits</div><div class="cell-desc">Convergence & sums</div></div>
+      <div class="cell"><div class="cell-icon">∂</div><div class="cell-name">Differential Eqs</div><div class="cell-desc">ODEs & PDEs</div></div>
+      <div class="cell"><div class="cell-icon">⊕</div><div class="cell-name">Discrete Maths</div><div class="cell-desc">Logic & combinatorics</div></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>© 2025 Maths Support</span>
+  <span>Free educational resource for students everywhere</span>
+</footer>
+
+<!-- Scramjet -->
+<script src="/scram/scramjet.config.js"></script>
+<script src="/scram/scramjet.all.js"></script>
+<script src="/baremux/index.js"></script>
+<script>
+  const scram = new ScramjetController(__scramjet$config);
+
+  async function initScramjet() {
+    try {
+      await BareMux.SetTransport("/epoxy/index.js", {
+        wisp: `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/wisp/`
+      });
+      await scram.init("/scram/scramjet.worker.js");
+    } catch(e) { console.warn("Scramjet:", e.message); }
+  }
+  initScramjet();
+
+  function msGo() {
+    const errEl = document.getElementById("ms-error");
+    errEl.style.display = "none";
+    let val = document.getElementById("ms-input").value.trim();
+    if (!val) return;
+    let target;
+    if (/^https?:\/\//i.test(val)) target = val;
+    else if (/^[a-zA-Z0-9-]+\.[a-zA-Z]{2,}/.test(val) && !val.includes(" ")) target = "https://" + val;
+    else target = "https://www.google.com/search?q=" + encodeURIComponent(val);
+    try { location.href = scram.encodeUrl(target); }
+    catch(e) { errEl.textContent = "Could not open resource. Please check the URL and try again."; errEl.style.display = "block"; }
+  }
+  document.getElementById("ms-input").addEventListener("keydown", e => { if (e.key === "Enter") msGo(); });
+
+  const formulas = ["E = mc²","a² + b² = c²","∫eˣ dx = eˣ + C","sin²θ + cos²θ = 1","x = (−b ± √(b²−4ac)) / 2a","A = πr²","e^(iπ) + 1 = 0","d/dx[xⁿ] = nxⁿ⁻¹","log(ab) = log(a) + log(b)","∑(1/n²) = π²/6","P(A∪B) = P(A)+P(B)−P(A∩B)","i² = −1"];
+  const track = document.getElementById("ftrack");
+  [...formulas,...formulas].forEach(f => { const s = document.createElement("span"); s.textContent = f; track.appendChild(s); });
+</script>
+</body>
+</html>
