@@ -23,23 +23,37 @@ function selfPing() {
 
 // ── Auto-copy Scramjet dist files on startup ────────────
 function copyDir(src, dest) {
-  if (!fs.existsSync(src)) return;
+  if (!fs.existsSync(src)) {
+    console.warn(`[build] MISSING: ${src}`);
+    return;
+  }
   fs.mkdirSync(dest, { recursive: true });
+  let count = 0;
   for (const file of fs.readdirSync(src)) {
     const s = path.join(src, file);
     const d = path.join(dest, file);
     if (fs.statSync(s).isDirectory()) copyDir(s, d);
-    else fs.copyFileSync(s, d);
+    else { fs.copyFileSync(s, d); count++; }
   }
+  console.log(`[build] ${src.split("node_modules/")[1] || src} → ${dest.split("public/")[1] || dest} (${count} files)`);
 }
 
 const nm  = path.join(__dirname, "node_modules");
 const pub = path.join(__dirname, "public");
 
+console.log("[build] Copying Scramjet dist files...");
 copyDir(path.join(nm, "@mercuryworkshop/scramjet/dist"),         path.join(pub, "scram"));
 copyDir(path.join(nm, "@mercuryworkshop/bare-mux/dist"),          path.join(pub, "baremux"));
 copyDir(path.join(nm, "@mercuryworkshop/epoxy-transport/dist"),   path.join(pub, "epoxy"));
 copyDir(path.join(nm, "@mercuryworkshop/libcurl-transport/dist"), path.join(pub, "libcurl"));
+console.log("[build] Done.");
+
+// Verify key files exist
+const keyFiles = ["scram/scramjet.all.js","scram/scramjet.worker.js","baremux/index.js","epoxy/index.js"];
+keyFiles.forEach(f => {
+  const fp = path.join(pub, f);
+  console.log(`[check] ${f}: ${fs.existsSync(fp) ? "OK" : "MISSING!"}`);
+});
 
 // ── Server setup ────────────────────────────────────────
 const app    = express();
